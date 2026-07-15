@@ -42,8 +42,8 @@ class WeatherModel(BaseModel):
     hourly: HourlyWeather = Field(..., description="시간대별 날씨 객체")
 
 class CountryModel(BaseModel):
-    """Nager.Date API (국가 정보) 응답 검증 스키마"""
-    commonName: str = Field(..., description="국가 일반 명칭")
+    """countries.dev API (국가 정보) 응답 검증 스키마"""
+    name: str = Field(..., description="국가 일반 명칭") # commonName에서 name으로 변경
     region: str = Field(..., description="소속 대륙")
 
 class IpModel(BaseModel):
@@ -85,7 +85,7 @@ async def collect_data() -> tuple[dict, dict, dict]:
     """
     urls = {
         "weather": "https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability&forecast_days=3&timezone=Asia/Seoul",
-        "country": "https://date.nager.at/api/v3/CountryInfo/KR", # RestCountries 대체 API 적용
+        "country": "https://countries.dev/alpha/KOR", # RestCountries 대체 API 적용
         "ip": "http://ip-api.com/json/8.8.8.8"
     }
 
@@ -207,7 +207,7 @@ def main() -> None:
     df = pd.DataFrame(weather_data.hourly.model_dump())
     df["req_ip"] = ip_data.query
     df["ip_city"] = ip_data.city
-    df["country_name"] = country_data.commonName
+    df["country_name"] = country_data.name  # commonName에서 name으로 변경!
     df["country_region"] = country_data.region
 
     # 4. 성능 비교 결과 출력
